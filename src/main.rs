@@ -68,7 +68,7 @@ impl UserManager {
         let deleted_user: Option<User> = self.users.remove(&email);
 
         if deleted_user.is_none() {
-            println!("USER WITH EMAIL {email} DOESNT EXIST IN THE BASE");
+            println!("USER WITH EMAIL {} DOESNT EXIST IN THE BASE", email);
         }
         else {
             println!("{:?} REMOVED FROM THE BASE", deleted_user.unwrap());
