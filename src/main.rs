@@ -6,33 +6,33 @@ enum Role {
     ADMIN,
 }
 
+// кисс и ъягни. просто скажу что в данном коде структ String не понадобится
+
 impl Role {
-    fn value(&self) -> String {
+    fn value(&self) -> &'static str {
         match *self {
-            Role::NORMIE => "NORMIE".to_string(),
-            Role::ADMIN => "ADMIN".to_string(),
+            Role::NORMIE => "NORMIE",
+            Role::ADMIN => "ADMIN",
         }
     }
 }
 
 struct User {
-    name: String,
-    email: String,
+    name: &'static str,
+    email: &'static str,
     role: Role,
 }
 
 impl Debug for User {
     fn fmt(&self, f: &mut Formatter) -> Result {
-        let _ = write!(f, "{} ", self.role.value());
-        let _ = write!(f, "{}", self.name);
-        return Ok(());
+        write!(f, "{} {}", self.role.value(), self.name)
     }
 }
 
 struct UserManager {
     // емейл ключ. зачем нам 2 пользователя с одинаковым емейлом
     // тем более так проще искать по емейлу
-    users: BTreeMap<String, User>,
+    users: BTreeMap<&'static str, User>,
 }
 
 impl Debug for UserManager {
@@ -53,9 +53,9 @@ impl UserManager {
 
     #[allow(nonstandard_style)]
     fn addUser(&mut self, user: User) {
-        if self.users.get(&user.email).is_none(){
+        if self.users.get(user.email).is_none(){
             println!("USER {:?} ADDED TO THE BASE", &user);
-            self.users.insert(user.email.clone(), user);
+            self.users.insert(user.email, user);
         }
         else{
             println!("EMAIL {} IS ALREADY OCCUPIED", user.email);
@@ -63,7 +63,7 @@ impl UserManager {
     }
 
     #[allow(nonstandard_style)]
-    fn removeUserByEmail(&mut self, email: String) {
+    fn removeUserByEmail(&mut self, email: &'static str) {
         // по тз не сказано что можно искать, поэтому пока оставим поиск тут
         let deleted_user: Option<User> = self.users.remove(&email);
 
@@ -83,33 +83,42 @@ impl UserManager {
 fn main() {
     let mut manager = UserManager::new();
 
+    // добавляем  нормиса
     manager.addUser(
         User{
-            name: "ПЕТЯ228".to_string(),
-            email: "irakirankakayaraznitsa@mail.ru".to_string(), 
+            name: "ПЕТЯ228",
+            email: "irakirankakayaraznitsa@mail.ru", 
             role: Role::NORMIE,
         }
     );
 
+    // добавялем админа
     manager.addUser(
         User{
-            name: "ЛОЛОЛОШКА".to_string(),
-            email: "romalololoshka@mail.ru".to_string(), 
+            name: "ЛОЛОЛОШКА",
+            email: "romalololoshka@mail.ru", 
             role: Role::ADMIN,
         }
     );
 
+    // О НЕТ ЛОЛОЛОШКУ ХОЧЕТ ВЗЛОМАТЬ ГЕНИАЛЬНЫЙ СЫЩИК ЮТУБ КАНАЛОВ
+    // но у него это не получится т.к система запретит
     manager.addUser(
         User{
-            name: "ГЕНИАЛЬНЫЙ СЫЩИК".to_string(),
-            email: "romalololoshka@mail.ru".to_string(), 
+            name: "ГЕНИАЛЬНЫЙ СЫЩИК",
+            email: "romalololoshka@mail.ru", 
             role: Role::ADMIN,
         }
     );
 
+    // отобразить
     manager.print();
 
-    manager.removeUserByEmail("irakirankakayaraznitsa@mail.ru".to_string());
+    // удалить реального пользователя
+    manager.removeUserByEmail("irakirankakayaraznitsa@mail.ru");
+    
+    // удалить несуществующего пользователя
+    manager.removeUserByEmail("wingdingaster@gmail.com");
 
     manager.print();
 
